@@ -689,7 +689,7 @@ export const WalletScreen: React.FC<WalletScreenProps> = ({
               </div>
 
               {/* Date Input */}
-              <div>
+              <div className="w-full max-w-full overflow-hidden">
                 <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
                   {t('date')}
                 </label>
@@ -698,7 +698,7 @@ export const WalletScreen: React.FC<WalletScreenProps> = ({
                   required
                   value={dateStr}
                   onChange={(e) => setDateStr(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-[#2c2c2e] border border-slate-200 dark:border-white/5 text-slate-900 dark:text-white font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full max-w-full min-w-0 box-border block px-4 py-3 rounded-2xl bg-slate-50 dark:bg-[#2c2c2e] border border-slate-200 dark:border-white/5 text-slate-900 dark:text-white font-semibold text-base focus:outline-none focus:ring-2 focus:ring-emerald-500 [color-scheme:light] dark:[color-scheme:dark]"
                 />
               </div>
 

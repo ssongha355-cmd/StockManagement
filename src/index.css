@@ -16,6 +16,21 @@
   input, select, textarea, button {
     font-size: 16px !important;
   }
+
+  /* CRITICAL FOR IOS SAFARI: Prevent date input overflow & enforce box-sizing */
+  input[type="date"] {
+    box-sizing: border-box;
+    max-width: 100%;
+    min-width: 0;
+    width: 100%;
+  }
+
+  /* Normalize iOS Safari WebKit internal date text alignment */
+  input[type="date"]::-webkit-date-and-time-value {
+    text-align: left;
+    margin: 0;
+    padding: 0;
+  }
 }
 
 /* Safe Area Inset Helpers */
