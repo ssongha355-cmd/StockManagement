@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase/config';
 import { updateUserSettings } from '../services/portfolioService';
+import { authenticateBiometrics, isBiometricsSupported } from '../utils/webauthn';
 import { Lock, Fingerprint, Delete, AlertCircle, LogOut, Loader2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -20,36 +21,15 @@ export const AppLockScreen: React.FC<AppLockScreenProps> = ({ pinCode, onUnlock,
   const [isResetting, setIsResetting] = useState<boolean>(false);
 
   const attemptBiometric = useCallback(async () => {
-    if (typeof window === 'undefined' || !window.PublicKeyCredential) {
-      return;
-    }
+    const supported = await isBiometricsSupported();
+    if (!supported) return;
 
     try {
       setIsAuthenticating(true);
-
-      const isAvailable = await window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable?.();
-      if (!isAvailable) {
-        return;
-      }
-
-      const challenge = new Uint8Array(32);
-      window.crypto.getRandomValues(challenge);
-
-      // Trigger native biometric prompt if platform supports it
-      const assertion = await navigator.credentials.get({
-        publicKey: {
-          challenge,
-          timeout: 60000,
-          userVerification: 'preferred',
-        },
-      });
-
-      if (assertion) {
+      const success = await authenticateBiometrics();
+      if (success) {
         onUnlock();
       }
-    } catch (err) {
-      // Gracefully catch cancellation, timeout, or lack of enrolled passkeys
-      console.debug('Biometric prompt dismissed or not configured:', err);
     } finally {
       setIsAuthenticating(false);
     }

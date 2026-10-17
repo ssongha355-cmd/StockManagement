@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, Lock, X, Check, KeyRound, AlertCircle } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
+import { registerBiometrics } from '../utils/webauthn';
 import { UserSettings } from '../types';
 
 interface SecuritySettingsModalProps {
@@ -18,6 +20,7 @@ export const SecuritySettingsModal: React.FC<SecuritySettingsModalProps> = ({
   onUpdateSettings,
   onLockNow,
 }) => {
+  const { user } = useAuth();
   const { t } = useLanguage();
   const [isEnabled, setIsEnabled] = useState<boolean>(!!userSettings.isAppLockEnabled);
   const [pin, setPin] = useState<string>(userSettings.pinCode || '');
@@ -46,6 +49,12 @@ export const SecuritySettingsModal: React.FC<SecuritySettingsModalProps> = ({
     try {
       setSaving(true);
       setErrorMsg(null);
+
+      // If turning lock ON, register passkey with device Keychain
+      if (nextState && user) {
+        await registerBiometrics(user.uid, user.email || undefined);
+      }
+
       await onUpdateSettings({
         isAppLockEnabled: nextState,
         pinCode: pin.trim(),
